@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated } from 'react-native';
 
 interface OnboardingScreenProps {
   onOnboardingComplete: () => void;
@@ -7,6 +7,26 @@ interface OnboardingScreenProps {
 
 const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onOnboardingComplete }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const blinkAnim = useState(new Animated.Value(1))[0];
+
+  useEffect(() => {
+    const blinkAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(blinkAnim, {
+          toValue: 0.3,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(blinkAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    blinkAnimation.start();
+    return () => blinkAnimation.stop();
+  }, [blinkAnim]);
 
   const slides = [
     {
@@ -63,14 +83,16 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onOnboardingComplet
       case 1:
         return (
           <View style={styles.illustrationContainer}>
-            <View style={styles.timerRingContainer}>
-              <View style={[styles.timerRing, styles.timerRingOuter]} />
-              <View style={[styles.timerRing, styles.timerRingMiddle]} />
-              <View style={styles.timerRingMain}>
-                <Text style={styles.timerRingText}>01:24</Text>
-                <Text style={styles.timerRingSubtext}>remaining</Text>
+            <Animated.View style={[styles.outerRing, { opacity: blinkAnim }]}>
+              <View style={styles.middleRing}>
+                <View style={styles.innerRing}>
+                  <View style={styles.timerContent}>
+                    <Text style={styles.timerRingText}>01:24</Text>
+                    <Text style={styles.timerRingSubtext}>remaining</Text>
+                  </View>
+                </View>
               </View>
-            </View>
+            </Animated.View>
           </View>
         );
       case 2:
@@ -179,7 +201,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   skipText: {
-    color: 'rgba(255, 255, 255, 0.3)',
+    color: 'rgba(255, 255, 255, 0.65)',
     fontSize: 14,
   },
   scrollContent: {
@@ -274,30 +296,34 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   // Slide 2 - Timer Ring
-  timerRingContainer: {
-    position: 'relative',
-    width: 160,
-    height: 160,
+  outerRing: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    borderWidth: 8,
+    borderColor: 'rgba(79, 124, 255, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  timerRing: {
-    position: 'absolute',
+  middleRing: {
+    width: 160,
+    height: 160,
     borderRadius: 80,
-    borderWidth: 8,
-  },
-  timerRingOuter: {
-    width: 184,
-    height: 184,
-    borderColor: 'rgba(79, 124, 255, 0.1)',
-  },
-  timerRingMiddle: {
-    width: 196,
-    height: 196,
-    borderColor: 'rgba(79, 124, 255, 0.05)',
-  },
-  timerRingMain: {
+    borderWidth: 6,
+    borderColor: 'rgba(79, 124, 255, 0.5)',
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  innerRing: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 4,
+    borderColor: 'rgba(79, 124, 255, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timerContent: {
     alignItems: 'center',
   },
   timerRingText: {

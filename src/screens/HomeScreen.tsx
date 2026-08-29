@@ -1,23 +1,43 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient';
+import { TodayFocus } from '../components';
 
 const HomeScreen: React.FC = () => {
+  const [completed] = useState(3);
+  const [goalPercent] = useState(68);
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Welcome to FocusTick</Text>
-        <Text style={styles.subtitle}>Your productivity companion</Text>
-      </View>
-      
-      <View style={styles.content}>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Start Focus Session</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonText}>View Statistics</Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView edges={['top']} style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.headerRow}>
+            <View>
+              <Text style={styles.greeting}>Good Evening</Text>
+              <Text style={styles.title}>Usman 👋</Text>
+              <Text style={styles.subtitle}>Ready to focus?</Text>
+            </View>
+            <View style={styles.profileContainer}>
+              <LinearGradient
+                colors={['#4f7cff', '#7c4fff']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.profileGradient}
+              />
+            </View>
+          </View>
+
+          <View style={styles.content}>
+            <TodayFocus completed={completed} goalPercent={goalPercent} />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
 };
@@ -25,58 +45,85 @@ const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#0a0a0f',
   },
-  header: {
-    padding: 30,
-    backgroundColor: '#6C63FF',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+  safeArea: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 24,
+    paddingBottom: 80,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 32,
+  },
+  profileContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 16,
+    backgroundColor: '#1a1a2e',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  profileGradient: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+  },
+  greeting: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginBottom: 8,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#E0E0E0',
+    color: 'rgba(255, 255, 255, 0.4)',
   },
   content: {
-    flex: 1,
+    backgroundColor: '#1a1a2e',
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
   },
   button: {
-    backgroundColor: '#6C63FF',
-    paddingVertical: 15,
+    backgroundColor: '#4f7cff',
+    paddingVertical: 16,
     paddingHorizontal: 40,
-    borderRadius: 30,
-    marginBottom: 20,
+    borderRadius: 16,
+    marginBottom: 16,
     width: '80%',
+    alignItems: 'center',
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '600',
   },
   secondaryButton: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 15,
+    backgroundColor: 'rgba(79, 124, 255, 0.1)',
+    paddingVertical: 16,
     paddingHorizontal: 40,
-    borderRadius: 30,
-    borderWidth: 2,
-    borderColor: '#6C63FF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#4f7cff',
     width: '80%',
+    alignItems: 'center',
   },
   secondaryButtonText: {
-    color: '#6C63FF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: '#4f7cff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
