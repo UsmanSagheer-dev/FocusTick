@@ -5,41 +5,37 @@
  * @format
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import React, { useState } from 'react';
+import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SplashScreen, OnboardingScreen, HomeScreen } from './src/screens';
+
+type Screen = 'splash' | 'onboarding' | 'home';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
+  const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
+
+  const handleSplashComplete = () => {
+    setCurrentScreen('onboarding');
+  };
+
+  const handleOnboardingComplete = () => {
+    setCurrentScreen('home');
+  };
 
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      {currentScreen === 'splash' && (
+        <SplashScreen onSplashComplete={handleSplashComplete} />
+      )}
+      {currentScreen === 'onboarding' && (
+        <OnboardingScreen onOnboardingComplete={handleOnboardingComplete} />
+      )}
+      {currentScreen === 'home' && <HomeScreen />}
     </SafeAreaProvider>
   );
 }
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;
