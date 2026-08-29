@@ -93,9 +93,9 @@ const styles = StyleSheet.create({
   },
 
   circle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
     borderWidth: 6,
     borderColor: '#4f7cff',
     alignItems: 'center',
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
 
   circleText: {
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: '700',
     color: '#fff',
   },
@@ -116,8 +116,8 @@ const styles = StyleSheet.create({
   },
 
   goalText: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.3)',
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.68)',
   },
 
   percent: {

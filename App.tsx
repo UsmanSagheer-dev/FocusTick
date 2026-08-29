@@ -11,20 +11,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
   SplashScreen,
   OnboardingScreen,
-  HomeScreen,
-  TasksScreen,
-  AnalyticsScreen,
-  SettingsScreen,
 } from './src/screens';
-import BottomNavigation from './src/common/BottomNavigation';
+import AppNavigator from './src/navigation/AppNavigator';
 
 type Screen = 'splash' | 'onboarding' | 'main';
-type TabType = 'home' | 'tasks' | 'analytics' | 'settings';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
-  const [activeTab, setActiveTab] = useState<TabType>('home');
 
   const handleSplashComplete = () => {
     setCurrentScreen('onboarding');
@@ -32,21 +26,6 @@ function App() {
 
   const handleOnboardingComplete = () => {
     setCurrentScreen('main');
-  };
-
-  const renderMainContent = () => {
-    switch (activeTab) {
-      case 'home':
-        return <HomeScreen />;
-      case 'tasks':
-        return <TasksScreen />;
-      case 'analytics':
-        return <AnalyticsScreen />;
-      case 'settings':
-        return <SettingsScreen />;
-      default:
-        return <HomeScreen />;
-    }
   };
 
   return (
@@ -58,12 +37,7 @@ function App() {
       {currentScreen === 'onboarding' && (
         <OnboardingScreen onOnboardingComplete={handleOnboardingComplete} />
       )}
-      {currentScreen === 'main' && (
-        <View style={styles.mainContainer}>
-          <View style={styles.content}>{renderMainContent()}</View>
-          <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-        </View>
-      )}
+      {currentScreen === 'main' && <AppNavigator />}
     </SafeAreaProvider>
   );
 }

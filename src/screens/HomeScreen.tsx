@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,55 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import { TodayFocus } from '../components';
+import { CurrentSession, TodayFocus } from '../components';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/AppNavigator';
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
+
+interface ActiveTask {
+  id: string;
+  name: string;
+  project: string;
+  duration: string;
+  status: 'pending' | 'running' | 'completed' | 'paused' | 'expired';
+  durationMinutes: number;
+}
 
 const HomeScreen: React.FC = () => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   const [completed] = useState(3);
   const [goalPercent] = useState(68);
+  const [activeTask, setActiveTask] = useState<ActiveTask | null>(null);
+  const [timerDisplay, setTimerDisplay] = useState('25:00');
+  const [timerProgress] = useState(0);
+
+  // Update timer display when active task changes
+  React.useEffect(() => {
+    if (activeTask) {
+      setTimerDisplay(`${activeTask.durationMinutes}:00`);
+    } else {
+      setTimerDisplay('25:00');
+    }
+  }, [activeTask]);
+
+  const onOpenFocus = useCallback(() => {
+    console.log('Open focus session');
+  }, []);
+
+  const onTaskDetails = useCallback((task: ActiveTask) => {
+    console.log('Task details:', task);
+  }, []);
+
+  const onCreateTask = useCallback(() => {
+    navigation.navigate('CreateTask', {
+      onTaskCreated: (task: ActiveTask) => {
+        setActiveTask(task);
+        console.log('Task created:', task);
+      }
+    });
+  }, [navigation]);
   return (
     <View style={styles.container}>
       <SafeAreaView edges={['top']} style={styles.safeArea}>
@@ -35,6 +79,16 @@ const HomeScreen: React.FC = () => {
 
           <View style={styles.content}>
             <TodayFocus completed={completed} goalPercent={goalPercent} />
+          </View>
+          <View style={styles.currentSessionContainer}>
+            <CurrentSession
+              activeTask={activeTask}
+              timerDisplay={timerDisplay}
+              timerProgress={timerProgress}
+              onOpenFocus={onOpenFocus}
+              onTaskDetails={onTaskDetails}
+              onCreateTask={onCreateTask}
+            />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -95,6 +149,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  currentSessionContainer: {
+    marginTop: 24,
   },
   button: {
     backgroundColor: '#4f7cff',
