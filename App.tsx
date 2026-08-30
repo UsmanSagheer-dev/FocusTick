@@ -6,11 +6,15 @@
  */
 
 import React, { useState } from 'react';
-import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
+import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { SplashScreen, OnboardingScreen, HomeScreen } from './src/screens';
+import {
+  SplashScreen,
+  OnboardingScreen,
+} from './src/screens';
+import AppNavigator from './src/navigation/AppNavigator';
 
-type Screen = 'splash' | 'onboarding' | 'home';
+type Screen = 'splash' | 'onboarding' | 'main';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -21,21 +25,31 @@ function App() {
   };
 
   const handleOnboardingComplete = () => {
-    setCurrentScreen('home');
+    setCurrentScreen('main');
   };
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <StatusBar barStyle={isDarkMode ? 'dark-content' : 'light-content'} />
       {currentScreen === 'splash' && (
         <SplashScreen onSplashComplete={handleSplashComplete} />
       )}
       {currentScreen === 'onboarding' && (
         <OnboardingScreen onOnboardingComplete={handleOnboardingComplete} />
       )}
-      {currentScreen === 'home' && <HomeScreen />}
+      {currentScreen === 'main' && <AppNavigator />}
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: '#0a0a0f',
+  },
+  content: {
+    flex: 1,
+  },
+});
 
 export default App;
