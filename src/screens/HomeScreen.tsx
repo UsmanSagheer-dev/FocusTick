@@ -8,12 +8,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import { CurrentSession, TodayFocus } from '../components';
+import { CurrentSession, TodayFocus, TodaysTasks } from '../components';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
+type HomeScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Main'
+>;
 
 interface ActiveTask {
   id: string;
@@ -31,6 +34,32 @@ const HomeScreen: React.FC = () => {
   const [activeTask, setActiveTask] = useState<ActiveTask | null>(null);
   const [timerDisplay, setTimerDisplay] = useState('25:00');
   const [timerProgress] = useState(0);
+  const [tasks] = useState<ActiveTask[]>([
+    {
+      id: '1',
+      name: 'Build Appointment Module',
+      project: 'Medicore',
+      duration: '1h 30m',
+      status: 'completed',
+      durationMinutes: 90,
+    },
+    {
+      id: '2',
+      name: 'Review PR #42',
+      project: 'Learning',
+      duration: '45m',
+      status: 'pending',
+      durationMinutes: 45,
+    },
+    {
+      id: '3',
+      name: 'Update documentation',
+      project: 'Personal',
+      duration: '30m',
+      status: 'pending',
+      durationMinutes: 30,
+    },
+  ]);
 
   // Update timer display when active task changes
   React.useEffect(() => {
@@ -47,6 +76,7 @@ const HomeScreen: React.FC = () => {
 
   const onTaskDetails = useCallback((task: ActiveTask) => {
     console.log('Task details:', task);
+    // You can navigate to task details screen here
   }, []);
 
   const onCreateTask = useCallback(() => {
@@ -54,7 +84,7 @@ const HomeScreen: React.FC = () => {
       onTaskCreated: (task: ActiveTask) => {
         setActiveTask(task);
         console.log('Task created:', task);
-      }
+      },
     });
   }, [navigation]);
   return (
@@ -89,6 +119,9 @@ const HomeScreen: React.FC = () => {
               onTaskDetails={onTaskDetails}
               onCreateTask={onCreateTask}
             />
+          </View>
+          <View style={styles.todayTasksContainer}>
+            <TodaysTasks tasks={tasks} onTaskDetails={onTaskDetails} />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -145,12 +178,12 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.4)',
   },
   content: {
-    backgroundColor: '#1a1a2e',
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginBottom: 24,
   },
   currentSessionContainer: {
+    marginTop: 24,
+  },
+  todayTasksContainer: {
     marginTop: 24,
   },
   button: {
