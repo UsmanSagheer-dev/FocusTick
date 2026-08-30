@@ -12,21 +12,9 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { AppInput, AppText } from '../common';
 import Icon from 'react-native-vector-icons/Ionicons';
+import type { Task } from './TaskDetailsScreen';
 
 type TasksScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
-
-interface Task {
-  id: string;
-  name: string;
-  project: string;
-  duration: string;
-  status:
-    | 'pending'
-    | 'running'
-    | 'completed'
-    | 'paused'
-    | 'expired';
-}
 
 const TasksScreen: React.FC = () => {
   const navigation = useNavigation<TasksScreenNavigationProp>();
@@ -119,7 +107,7 @@ const TasksScreen: React.FC = () => {
    * Task Details
    */
   const handleTaskDetails = (task: Task) => {
-    console.log('Task details:', task);
+    navigation.navigate('TaskDetails', { task });
   };
 
   return (

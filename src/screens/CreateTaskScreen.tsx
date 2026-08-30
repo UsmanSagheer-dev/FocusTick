@@ -123,8 +123,6 @@ const CreateTask = ({ onBack, onStart, onSave }: CreateTaskProps) => {
 
         {/* Description */}
         <View style={styles.formGroup}>
-         
-
           <AppInput
             value={desc}
             label="Description"
@@ -196,7 +194,6 @@ const CreateTask = ({ onBack, onStart, onSave }: CreateTaskProps) => {
           </View>
         </View>
 
-        {/* Priority */}
         <View style={styles.priorityGroup}>
           <AppText variant="label" style={styles.label}>
             Priority

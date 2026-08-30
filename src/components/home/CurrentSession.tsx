@@ -1,14 +1,8 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import type { Task } from '../../screens/TaskDetailsScreen';
 
-interface ActiveTask {
-  id: string;
-  name: string;
-  project: string;
-  duration: string;
-  status: 'pending' | 'running' | 'completed' | 'paused' | 'expired';
-  durationMinutes: number;
-}
+type ActiveTask = Task;
 
 interface CurrentSessionProps {
   activeTask: ActiveTask | null;

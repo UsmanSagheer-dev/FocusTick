@@ -13,21 +13,14 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { AppText } from '../common';
-
+import type { Task } from './TaskDetailsScreen';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Main'
 >;
 
-interface ActiveTask {
-  id: string;
-  name: string;
-  project: string;
-  duration: string;
-  status: 'pending' | 'running' | 'completed' | 'paused' | 'expired';
-  durationMinutes: number;
-}
+type ActiveTask = Task;
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
@@ -77,9 +70,8 @@ const HomeScreen: React.FC = () => {
   }, []);
 
   const onTaskDetails = useCallback((task: ActiveTask) => {
-    console.log('Task details:', task);
-    // You can navigate to task details screen here
-  }, []);
+    navigation.navigate('TaskDetails', { task });
+  }, [navigation]);
 
   const onCreateTask = useCallback(() => {
     navigation.navigate('CreateTask', {

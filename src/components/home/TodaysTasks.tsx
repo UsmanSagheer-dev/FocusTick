@@ -5,20 +5,7 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
-
-interface Task {
-  id: string;
-  name: string;
-  project: string;
-  duration: string;
-  status:
-    | 'pending'
-    | 'running'
-    | 'completed'
-    | 'paused'
-    | 'expired';
-  durationMinutes: number;
-}
+import type { Task } from '../../screens/TaskDetailsScreen';
 
 interface TodaysTasksProps {
   tasks: Task[];
