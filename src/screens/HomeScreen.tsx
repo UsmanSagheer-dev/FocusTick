@@ -12,20 +12,15 @@ import { CurrentSession, TodayFocus, TodaysTasks } from '../components';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
+import { AppText } from '../common';
+import type { Task } from './TaskDetailsScreen';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Main'
 >;
 
-interface ActiveTask {
-  id: string;
-  name: string;
-  project: string;
-  duration: string;
-  status: 'pending' | 'running' | 'completed' | 'paused' | 'expired';
-  durationMinutes: number;
-}
+type ActiveTask = Task;
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
@@ -75,9 +70,8 @@ const HomeScreen: React.FC = () => {
   }, []);
 
   const onTaskDetails = useCallback((task: ActiveTask) => {
-    console.log('Task details:', task);
-    // You can navigate to task details screen here
-  }, []);
+    navigation.navigate('TaskDetails', { task });
+  }, [navigation]);
 
   const onCreateTask = useCallback(() => {
     navigation.navigate('CreateTask', {
@@ -93,9 +87,9 @@ const HomeScreen: React.FC = () => {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.headerRow}>
             <View>
-              <Text style={styles.greeting}>Good Evening</Text>
-              <Text style={styles.title}>Usman 👋</Text>
-              <Text style={styles.subtitle}>Ready to focus?</Text>
+              <AppText variant="subheading"  style={styles.greeting}>Good Evening</AppText>
+              <AppText variant="heading1" style={styles.title}>Usman 👋</AppText>
+              <AppText variant="body" style={styles.subtitle}>Ready to focus?</AppText>
             </View>
             <View style={styles.profileContainer}>
               <LinearGradient
@@ -163,7 +157,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   greeting: {
-    fontSize: 16,
     color: 'rgba(255, 255, 255, 0.6)',
     marginBottom: 8,
   },

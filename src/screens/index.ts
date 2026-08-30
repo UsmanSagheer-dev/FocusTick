@@ -6,3 +6,4 @@ export { default as TasksScreen } from './TasksScreen';
 export { default as AnalyticsScreen } from './AnalyticsScreen';
 export { default as SettingsScreen } from './SettingsScreen';
 export { CreateTaskScreen } from './CreateTaskScreen';
+export { default as TaskDetailsScreen } from './TaskDetailsScreen';

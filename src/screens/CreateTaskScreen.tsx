@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RootStackParamList } from '../navigation/AppNavigator';
+import { AppInput, AppText } from '../common';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface Task {
   id: string;
@@ -25,34 +20,21 @@ interface CreateTaskProps {
   onSave: (task: Task) => void;
 }
 
-const projects = [
-  'Medicore',
-  'Learning',
-  'Freelancing',
-  'Personal',
-  'Other',
-];
+const projects = ['Medicore', 'Learning', 'Freelancing', 'Personal', 'Other'];
 
 const priorities = ['low', 'medium', 'high'] as const;
 
-const CreateTask = ({
-  onBack,
-  onStart,
-  onSave,
-}: CreateTaskProps) => {
+const CreateTask = ({ onBack, onStart, onSave }: CreateTaskProps) => {
   const [name, setName] = useState('Build Appointment Module');
   const [project, setProject] = useState('Medicore');
   const [desc, setDesc] = useState('');
   const [hours, setHours] = useState(1);
   const [mins, setMins] = useState(30);
-  const [priority, setPriority] =
-    useState<'low' | 'medium' | 'high'>('medium');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
 
   const [showProjects, setShowProjects] = useState(false);
 
-  const buildTask = (
-    status: Task['status']
-  ): Task => ({
+  const buildTask = (status: Task['status']): Task => ({
     id: Date.now().toString(),
     name: name.trim() || 'Untitled Task',
     project,
@@ -63,7 +45,6 @@ const CreateTask = ({
 
   return (
     <View style={styles.container}>
-
       {/* Header */}
       <View style={styles.header}>
         <Pressable
@@ -73,60 +54,44 @@ const CreateTask = ({
             pressed && styles.pressed,
           ]}
         >
-          <Text style={styles.backIcon}>‹</Text>
+          <Icon name="arrow-back" size={24} color="#FFFFFF" />
         </Pressable>
 
-        <Text style={styles.title}>
-          Create Task
-        </Text>
+        <AppText variant="heading3">Create Task</AppText>
       </View>
 
-      {/* Form */}
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-
-        {/* Task Name */}
         <View style={styles.formGroup}>
-          <Text style={styles.label}>
-            TASK NAME
-          </Text>
-
-          <TextInput
+          <AppInput
             value={name}
+            label="Task Name"
             onChangeText={setName}
             placeholder="What are you working on?"
-            placeholderTextColor="rgba(255,255,255,0.2)"
-            style={styles.input}
           />
         </View>
 
         {/* Project */}
         <View style={styles.formGroup}>
-          <Text style={styles.label}>
-            PROJECT
-          </Text>
+          <AppText variant="label" style={styles.label}>
+            Project
+          </AppText>
 
           <Pressable
-            onPress={() =>
-              setShowProjects(!showProjects)
-            }
+            onPress={() => setShowProjects(!showProjects)}
             style={styles.selectButton}
           >
-            <Text style={styles.selectText}>
-              {project}
-            </Text>
+            <AppText style={styles.selectText}>{project}</AppText>
 
-            <Text style={styles.arrow}>
-              {showProjects ? '⌃' : '⌄'}
-            </Text>
+            <AppText style={styles.arrow}>{showProjects ? '⌃' : '⌄'}</AppText>
           </Pressable>
 
           {showProjects && (
             <View style={styles.dropdown}>
-              {projects.map((p) => {
+              {projects.map(p => {
                 const active = p === project;
 
                 return (
@@ -141,14 +106,14 @@ const CreateTask = ({
                       pressed && styles.dropdownPressed,
                     ]}
                   >
-                    <Text
+                    <AppText
                       style={[
                         styles.dropdownText,
                         active && styles.dropdownActive,
                       ]}
                     >
                       {p}
-                    </Text>
+                    </AppText>
                   </Pressable>
                 );
               })}
@@ -158,79 +123,57 @@ const CreateTask = ({
 
         {/* Description */}
         <View style={styles.formGroup}>
-          <Text style={styles.label}>
-            DESCRIPTION
-          </Text>
-
-          <TextInput
+          <AppInput
             value={desc}
+            label="Description"
             onChangeText={setDesc}
             placeholder="Optional description..."
-            placeholderTextColor="rgba(255,255,255,0.2)"
             multiline
             numberOfLines={3}
             textAlignVertical="top"
-            style={[
-              styles.input,
-              styles.textarea,
-            ]}
+            style={{ minHeight: 85 }}
           />
         </View>
 
         {/* Duration */}
         <View style={styles.formGroup}>
-          <Text style={styles.label}>
-            DURATION
-          </Text>
+          <AppText variant="label" style={styles.label}>
+            Duration
+          </AppText>
 
           <View style={styles.durationRow}>
-
             {/* Hours */}
             <View style={styles.durationBox}>
               <Pressable
-                onPress={() =>
-                  setHours(Math.max(0, hours - 1))
-                }
+                onPress={() => setHours(Math.max(0, hours - 1))}
                 style={styles.counterButton}
               >
-                <Text style={styles.counterText}>
-                  −
-                </Text>
+                <Text style={styles.counterText}>−</Text>
               </Pressable>
 
               <View style={styles.durationValue}>
-                <Text style={styles.durationNumber}>
+                <AppText style={styles.durationNumber}>
                   {String(hours).padStart(2, '0')}
-                </Text>
+                </AppText>
 
-                <Text style={styles.durationUnit}>
-                  hr
-                </Text>
+                <AppText style={styles.durationUnit}>hr</AppText>
               </View>
 
               <Pressable
-                onPress={() =>
-                  setHours(Math.min(12, hours + 1))
-                }
+                onPress={() => setHours(Math.min(12, hours + 1))}
                 style={styles.counterButton}
               >
-                <Text style={styles.counterText}>
-                  +
-                </Text>
+                <Text style={styles.counterText}>+</Text>
               </Pressable>
             </View>
 
             {/* Minutes */}
             <View style={styles.durationBox}>
               <Pressable
-                onPress={() =>
-                  setMins(Math.max(0, mins - 5))
-                }
+                onPress={() => setMins(Math.max(0, mins - 5))}
                 style={styles.counterButton}
               >
-                <Text style={styles.counterText}>
-                  −
-                </Text>
+                <Text style={styles.counterText}>−</Text>
               </Pressable>
 
               <View style={styles.durationValue}>
@@ -238,44 +181,33 @@ const CreateTask = ({
                   {String(mins).padStart(2, '0')}
                 </Text>
 
-                <Text style={styles.durationUnit}>
-                  min
-                </Text>
+                <Text style={styles.durationUnit}>min</Text>
               </View>
 
               <Pressable
-                onPress={() =>
-                  setMins(Math.min(55, mins + 5))
-                }
+                onPress={() => setMins(Math.min(55, mins + 5))}
                 style={styles.counterButton}
               >
-                <Text style={styles.counterText}>
-                  +
-                </Text>
+                <Text style={styles.counterText}>+</Text>
               </Pressable>
             </View>
-
           </View>
         </View>
 
-        {/* Priority */}
         <View style={styles.priorityGroup}>
-          <Text style={styles.label}>
-            PRIORITY
-          </Text>
+          <AppText variant="label" style={styles.label}>
+            Priority
+          </AppText>
 
           <View style={styles.priorityRow}>
-            {priorities.map((p) => {
+            {priorities.map(p => {
               const active = priority === p;
 
               return (
                 <Pressable
                   key={p}
                   onPress={() => setPriority(p)}
-                  style={[
-                    styles.priorityButton,
-                    active && getPriorityStyle(p),
-                  ]}
+                  style={[styles.priorityButton, active && getPriorityStyle(p)]}
                 >
                   <Text
                     style={[
@@ -290,24 +222,18 @@ const CreateTask = ({
             })}
           </View>
         </View>
-
       </ScrollView>
 
       {/* CTAs */}
       <View style={styles.ctaContainer}>
-
         <Pressable
-          onPress={() =>
-            onStart(buildTask('running'))
-          }
+          onPress={() => onStart(buildTask('running'))}
           style={({ pressed }) => [
             styles.startButton,
             pressed && styles.pressed,
           ]}
         >
-          <Text style={styles.startButtonText}>
-            ▶ Start Timer
-          </Text>
+          <AppText style={styles.startButtonText}>▶ Start Timer</AppText>
         </Pressable>
 
         <Pressable
@@ -320,11 +246,8 @@ const CreateTask = ({
             pressed && styles.pressed,
           ]}
         >
-          <Text style={styles.saveButtonText}>
-            Save Task
-          </Text>
+          <AppText style={styles.saveButtonText}>Save Task</AppText>
         </Pressable>
-
       </View>
     </View>
   );
@@ -350,29 +273,17 @@ const CreateTaskScreenWrapper: React.FC = () => {
   };
 
   const handleSave = (task: Task) => {
-    // For now, just go back - you can extend this to handle task saving
-    console.log('Saving task:', task);
     navigation.goBack();
   };
 
   return (
-    <CreateTask
-      onBack={handleBack}
-      onStart={handleStart}
-      onSave={handleSave}
-    />
+    <CreateTask onBack={handleBack} onStart={handleStart} onSave={handleSave} />
   );
 };
 
 export { CreateTaskScreenWrapper as CreateTaskScreen };
 
-/* ------------------------------------------------ */
-/* Helpers */
-/* ------------------------------------------------ */
-
-const getPriorityStyle = (
-  priority: 'low' | 'medium' | 'high'
-) => {
+const getPriorityStyle = (priority: 'low' | 'medium' | 'high') => {
   switch (priority) {
     case 'low':
       return styles.priorityLow;
@@ -385,9 +296,7 @@ const getPriorityStyle = (
   }
 };
 
-const getPriorityTextStyle = (
-  priority: 'low' | 'medium' | 'high'
-) => {
+const getPriorityTextStyle = (priority: 'low' | 'medium' | 'high') => {
   switch (priority) {
     case 'low':
       return styles.priorityLowText;
@@ -400,14 +309,17 @@ const getPriorityTextStyle = (
   }
 };
 
-/* ------------------------------------------------ */
-/* Styles */
-/* ------------------------------------------------ */
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0a0a0f',
+  },
+
+  label: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 12,
+    letterSpacing: 2,
+    marginBottom: 8,
   },
 
   header: {
@@ -435,12 +347,6 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
 
-  title: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: '700',
-  },
-
   scroll: {
     flex: 1,
   },
@@ -452,30 +358,6 @@ const styles = StyleSheet.create({
 
   formGroup: {
     marginBottom: 20,
-  },
-
-  label: {
-    color: 'rgba(255,255,255,0.4)',
-    fontSize: 12,
-    letterSpacing: 2,
-    marginBottom: 8,
-  },
-
-  input: {
-    width: '100%',
-    minHeight: 52,
-    backgroundColor: '#111118',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    color: '#fff',
-    fontSize: 15,
-  },
-
-  textarea: {
-    minHeight: 85,
   },
 
   selectButton: {
