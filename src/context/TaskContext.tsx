@@ -4,7 +4,10 @@ import React, {
   useContext,
   useMemo,
   useState,
+  useEffect,
+  useRef,
 } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Task, TaskStatus } from '../types';
 
 interface TaskContextValue {
@@ -22,10 +25,47 @@ interface TaskContextValue {
 
 const TaskContext = createContext<TaskContextValue | undefined>(undefined);
 
+const STORAGE_KEY = '@focustick:tasks';
+
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const isInitialLoad = useRef(true);
+
+  // Load tasks from AsyncStorage on mount
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        const storedTasks = await AsyncStorage.getItem(STORAGE_KEY);
+        if (storedTasks) {
+          setTasks(JSON.parse(storedTasks));
+        }
+      } catch (error) {
+        console.error('Failed to load tasks from storage:', error);
+      }
+    };
+
+    loadTasks();
+  }, []);
+
+  // Save tasks to AsyncStorage whenever they change (skip initial load)
+  useEffect(() => {
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      return;
+    }
+
+    const saveTasks = async () => {
+      try {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      } catch (error) {
+        console.error('Failed to save tasks to storage:', error);
+      }
+    };
+
+    saveTasks();
+  }, [tasks]);
 
   const activeTask = useMemo(
     () => tasks.find(t => t.status === 'running') ?? null,
