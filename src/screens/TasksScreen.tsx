@@ -12,67 +12,29 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { AppInput, AppText } from '../common';
 import Icon from 'react-native-vector-icons/Ionicons';
-import type { Task } from './TaskDetailsScreen';
 
-type TasksScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
+import type { Task } from '../types';
+import { TaskProvider, useTasks } from '../context/TaskContext';
+import { TaskCard } from '../components';
+
+type TasksScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Main'
+>;
 
 const TasksScreen: React.FC = () => {
   const navigation = useNavigation<TasksScreenNavigationProp>();
+  const { tasks } = useTasks();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
 
-  // Temporary tasks
-  // Baad mein ye data state/API/Redux se aa sakta hai.
-  const [tasks] = useState<Task[]>([
-    {
-      id: '1',
-      name: 'Build Appointment Module',
-      project: 'Medicore',
-      duration: '1h 30m',
-      status: 'running',
-    },
-    {
-      id: '2',
-      name: 'Learn React Native',
-      project: 'Learning',
-      duration: '2h',
-      status: 'pending',
-    },
-    {
-      id: '3',
-      name: 'Update Portfolio',
-      project: 'Freelancing',
-      duration: '1h',
-      status: 'completed',
-    },
-    {
-      id: '4',
-      name: 'Fix Authentication',
-      project: 'Medicore',
-      duration: '45m',
-      status: 'paused',
-    },
-    {
-      id: '5',
-      name: 'Prepare Project Documentation',
-      project: 'Personal',
-      duration: '1h 15m',
-      status: 'expired',
-    },
-  ]);
-
-  const filters = [
-    'All',
-    'Today',
-    'Pending',
-    'Completed',
-  ];
+  const filters = ['All', 'Today', 'Pending', 'Completed'];
 
   /*
    * Search + Filter
    */
   const filteredTasks = useMemo(() => {
-    return tasks.filter((task) => {
+    return tasks.filter(task => {
       // Filter
       let matchesFilter = true;
 
@@ -111,12 +73,9 @@ const TasksScreen: React.FC = () => {
   };
 
   return (
+    <TaskProvider>
     <View style={styles.container}>
-      <SafeAreaView
-        edges={['top']}
-        style={styles.safeArea}
-      >
-
+      <SafeAreaView edges={['top']} style={styles.safeArea}>
         <View style={styles.header}>
           <View style={styles.headerTop}>
             <View>
@@ -135,19 +94,22 @@ const TasksScreen: React.FC = () => {
               activeOpacity={0.8}
               style={styles.addButton}
             >
-              <Text style={styles.addIcon}>
-                +
-              </Text>
+              <Text style={styles.addIcon}>+</Text>
             </TouchableOpacity>
           </View>
-
 
           <View style={styles.searchContainer}>
             <AppInput
               value={search}
               onChangeText={setSearch}
               placeholder="Search tasks..."
-              icon={<Icon name="search" size={20} color="rgba(255,255,255,0.25)" />}
+              icon={
+                <Icon
+                  name="search"
+                  size={20}
+                  color="rgba(255,255,255,0.25)"
+                />
+              }
               iconPosition="left"
               containerStyle={styles.searchInputContainer}
               style={styles.searchInput}
@@ -155,13 +117,12 @@ const TasksScreen: React.FC = () => {
             />
           </View>
 
-
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.filterContainer}
           >
-            {filters.map((item) => {
+            {filters.map(item => {
               const active = filter === item;
 
               return (
@@ -171,15 +132,13 @@ const TasksScreen: React.FC = () => {
                   activeOpacity={0.8}
                   style={[
                     styles.filterButton,
-                    active &&
-                      styles.filterButtonActive,
+                    active && styles.filterButtonActive,
                   ]}
                 >
                   <AppText
                     style={[
                       styles.filterText,
-                      active &&
-                        styles.filterTextActive,
+                      active && styles.filterTextActive,
                     ]}
                   >
                     {item}
@@ -206,9 +165,7 @@ const TasksScreen: React.FC = () => {
 
             <View style={styles.emptyState}>
               <View style={styles.emptyIconContainer}>
-                <Text style={styles.emptyIcon}>
-                  ✓
-                </Text>
+                <Text style={styles.emptyIcon}>✓</Text>
               </View>
 
               <AppText variant="subheading" style={styles.emptyTitle}>
@@ -226,9 +183,7 @@ const TasksScreen: React.FC = () => {
                 activeOpacity={0.8}
                 style={styles.createTaskButton}
               >
-                <AppText style={styles.createTaskText}>
-                  Create Task
-                </AppText>
+                <AppText style={styles.createTaskText}>Create Task</AppText>
               </TouchableOpacity>
             </View>
           ) : (
@@ -237,139 +192,23 @@ const TasksScreen: React.FC = () => {
             /* ================================== */
 
             <View style={styles.taskList}>
-              {filteredTasks.map((task) => {
-                const completed =
-                  task.status === 'completed';
-
-                return (
-                  <TouchableOpacity
-                    key={task.id}
-                    onPress={() =>
-                      handleTaskDetails(task)
-                    }
-                    activeOpacity={0.8}
-                    style={styles.taskCard}
-                  >
-                    <View style={styles.taskRow}>
-                      {/* LEFT */}
-                      <View style={styles.taskLeft}>
-                        {/* Status */}
-                        <View
-                          style={[
-                            styles.statusBadge,
-                            getStatusBadgeStyle(
-                              task.status
-                            ),
-                          ]}
-                        >
-                          <AppText
-                            style={[
-                              styles.statusText,
-                              getStatusTextStyle(
-                                task.status
-                              ),
-                            ]}
-                          >
-                            {task.status}
-                          </AppText>
-                        </View>
-
-                        {/* Task Name */}
-                        <AppText
-                          numberOfLines={1}
-                          style={[
-                            styles.taskName,
-                            completed &&
-                              styles.completedTask,
-                          ]}
-                        >
-                          {task.name}
-                        </AppText>
-
-                        {/* Project */}
-                        <AppText variant="caption" style={styles.project}>
-                          {task.project}
-                        </AppText>
-                      </View>
-
-                      {/* RIGHT */}
-                      <View style={styles.taskRight}>
-                        <AppText variant="subheading" style={styles.duration}>
-                          {task.duration}
-                        </AppText>
-
-                        <AppText variant="caption" style={styles.date}>
-                          Today
-                        </AppText>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
+              {filteredTasks.map(task => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  onPress={handleTaskDetails}
+                  showDate={true}
+                  useTouchableOpacity={true}
+                />
+              ))}
             </View>
           )}
         </ScrollView>
       </SafeAreaView>
     </View>
+    </TaskProvider>
   );
 };
-
-/* ============================================== */
-/* STATUS BADGE BACKGROUND                        */
-/* ============================================== */
-
-const getStatusBadgeStyle = (
-  status: Task['status']
-) => {
-  switch (status) {
-    case 'pending':
-      return styles.pendingBadge;
-
-    case 'running':
-      return styles.runningBadge;
-
-    case 'completed':
-      return styles.completedBadge;
-
-    case 'paused':
-      return styles.pausedBadge;
-
-    case 'expired':
-      return styles.expiredBadge;
-
-    default:
-      return styles.pendingBadge;
-  }
-};
-
-/* ============================================== */
-/* STATUS TEXT                                    */
-/* ============================================== */
-
-const getStatusTextStyle = (
-  status: Task['status']
-) => {
-  switch (status) {
-    case 'pending':
-      return styles.pendingText;
-
-    case 'running':
-      return styles.runningText;
-
-    case 'completed':
-      return styles.completedText;
-
-    case 'paused':
-      return styles.pausedText;
-
-    case 'expired':
-      return styles.expiredText;
-
-    default:
-      return styles.pendingText;
-  }
-};
-
 
 const styles = StyleSheet.create({
   container: {
@@ -422,8 +261,6 @@ const styles = StyleSheet.create({
     lineHeight: 30,
   },
 
-
-
   searchContainer: {
     marginBottom: 14,
   },
@@ -442,8 +279,6 @@ const styles = StyleSheet.create({
     height: 48,
     paddingLeft: 48,
   },
-
-
 
   filterContainer: {
     gap: 8,
@@ -471,8 +306,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 
-
-
   taskScroll: {
     flex: 1,
   },
@@ -485,130 +318,6 @@ const styles = StyleSheet.create({
   taskList: {
     gap: 10,
   },
-
-
-
-  taskCard: {
-    backgroundColor: '#111118',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 16,
-    padding: 16,
-  },
-
-  taskRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-  },
-
-  taskLeft: {
-    flex: 1,
-    marginRight: 12,
-  },
-
-
-  statusBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 20,
-    marginBottom: 7,
-  },
-
-  statusText: {
-    fontSize: 10,
-    fontWeight: '500',
-    textTransform: 'capitalize',
-  },
-
-  /* Pending */
-
-  pendingBadge: {
-    backgroundColor: 'rgba(251,191,36,0.1)',
-  },
-
-  pendingText: {
-    color: '#fbbf24',
-  },
-
-
-  runningBadge: {
-    backgroundColor: 'rgba(79,124,255,0.1)',
-  },
-
-  runningText: {
-    color: '#4f7cff',
-  },
-
-
-
-  completedBadge: {
-    backgroundColor: 'rgba(52,211,153,0.1)',
-  },
-
-  completedText: {
-    color: '#34d399',
-  },
-
-
-
-  pausedBadge: {
-    backgroundColor: 'rgba(249,115,22,0.1)',
-  },
-
-  pausedText: {
-    color: '#f97316',
-  },
-
-
-
-  expiredBadge: {
-    backgroundColor: 'rgba(248,113,113,0.1)',
-  },
-
-  expiredText: {
-    color: '#f87171',
-  },
-
-
-
-  taskName: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 3,
-  },
-
-  completedTask: {
-    color: 'rgba(255,255,255,0.4)',
-    textDecorationLine: 'line-through',
-  },
-
-  project: {
-    color: 'rgba(255,255,255,0.3)',
-    fontSize: 13,
-  },
-
-
-  taskRight: {
-    alignItems: 'flex-end',
-    paddingTop: 2,
-  },
-
-  duration: {
-    color: 'rgba(255,255,255,0.7)',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-
-  date: {
-    color: 'rgba(255,255,255,0.2)',
-    fontSize: 11,
-    marginTop: 5,
-  },
-
-
 
   emptyState: {
     alignItems: 'center',

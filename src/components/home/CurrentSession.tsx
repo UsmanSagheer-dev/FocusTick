@@ -1,15 +1,13 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import type { Task } from '../../screens/TaskDetailsScreen';
-
-type ActiveTask = Task;
+import type { Task } from '../../types';
 
 interface CurrentSessionProps {
-  activeTask: ActiveTask | null;
+  activeTask: Task | null;
   timerDisplay: string;
   timerProgress: number;
   onOpenFocus: () => void;
-  onTaskDetails: (task: ActiveTask) => void;
+  onTaskDetails: (task: Task) => void;
   onCreateTask: () => void;
 }
 

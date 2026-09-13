@@ -9,6 +9,7 @@ import {
   CreateTaskScreen,
   TaskDetailsScreen,
 } from '../screens';
+import FocusModeScreen from '../screens/FocusModeScreen';
 import BottomNavigation from '../common/BottomNavigation';
 import type { Task } from '../screens/TaskDetailsScreen';
 
@@ -16,6 +17,7 @@ export type RootStackParamList = {
   Main: undefined;
   CreateTask: { onTaskCreated?: (task: Task) => void } | undefined;
   TaskDetails: { task: Task };
+  FocusMode: { task: Task };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -37,9 +39,16 @@ const AppNavigator: React.FC = () => {
             animation: 'slide_from_right',
           }}
         />
-        <Stack.Screen 
-          name="TaskDetails" 
+        <Stack.Screen
+          name="TaskDetails"
           component={TaskDetailsScreen}
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="FocusMode"
+          component={FocusModeScreen}
           options={{
             animation: 'slide_from_right',
           }}

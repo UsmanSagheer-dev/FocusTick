@@ -13,6 +13,7 @@ import {
   OnboardingScreen,
 } from './src/screens';
 import AppNavigator from './src/navigation/AppNavigator';
+import { TaskProvider } from './src/context/TaskContext';
 
 type Screen = 'splash' | 'onboarding' | 'main';
 
@@ -30,6 +31,7 @@ function App() {
 
   return (
     <SafeAreaProvider>
+      <TaskProvider>
       <StatusBar barStyle={isDarkMode ? 'dark-content' : 'light-content'} />
       {currentScreen === 'splash' && (
         <SplashScreen onSplashComplete={handleSplashComplete} />
@@ -38,6 +40,7 @@ function App() {
         <OnboardingScreen onOnboardingComplete={handleOnboardingComplete} />
       )}
       {currentScreen === 'main' && <AppNavigator />}
+      </TaskProvider>
     </SafeAreaProvider>
   );
 }

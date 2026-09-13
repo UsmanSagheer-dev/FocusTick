@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { RootStackParamList } from '../navigation/AppNavigator';
+import { useNavigation } from '@react-navigation/native';
 import { AppInput, AppText } from '../common';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-interface Task {
-  id: string;
-  name: string;
-  project: string;
-  duration: string;
-  status: 'pending' | 'running' | 'completed' | 'paused' | 'expired';
-  durationMinutes: number;
-}
+import type { Task } from '../types';
+import { useTasks } from '../context/TaskContext';
 
 interface CreateTaskProps {
   onBack: () => void;
@@ -25,23 +18,36 @@ const projects = ['Medicore', 'Learning', 'Freelancing', 'Personal', 'Other'];
 const priorities = ['low', 'medium', 'high'] as const;
 
 const CreateTask = ({ onBack, onStart, onSave }: CreateTaskProps) => {
-  const [name, setName] = useState('Build Appointment Module');
+  const [name, setName] = useState('');
   const [project, setProject] = useState('Medicore');
   const [desc, setDesc] = useState('');
   const [hours, setHours] = useState(1);
   const [mins, setMins] = useState(30);
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>(
+    'medium',
+  );
 
   const [showProjects, setShowProjects] = useState(false);
+  const [useCustomDuration, setUseCustomDuration] = useState(false);
+  const [customHours, setCustomHours] = useState('1');
+  const [customMins, setCustomMins] = useState('30');
 
-  const buildTask = (status: Task['status']): Task => ({
-    id: Date.now().toString(),
-    name: name.trim() || 'Untitled Task',
-    project,
-    duration: `${hours}h ${mins}m`,
-    durationMinutes: hours * 60 + mins,
-    status,
-  });
+  const buildTask = (status: Task['status']): Task => {
+    const finalHours = useCustomDuration ? parseInt(customHours) || 0 : hours;
+    const finalMins = useCustomDuration ? parseInt(customMins) || 0 : mins;
+    const totalMinutes = finalHours * 60 + finalMins;
+
+    return {
+      id: Date.now().toString(),
+      name: name.trim() || 'Untitled Task',
+      project,
+      duration: `${finalHours}h ${finalMins}m`,
+      durationMinutes: totalMinutes,
+      status,
+      description: desc.trim() || undefined,
+      priority,
+    };
+  };
 
   return (
     <View style={styles.container}>
@@ -137,11 +143,23 @@ const CreateTask = ({ onBack, onStart, onSave }: CreateTaskProps) => {
 
         {/* Duration */}
         <View style={styles.formGroup}>
-          <AppText variant="label" style={styles.label}>
-            Duration
-          </AppText>
+          <View style={styles.durationHeader}>
+            <AppText variant="label" style={styles.label}>
+              Duration
+            </AppText>
 
-          <View style={styles.durationRow}>
+            <Pressable
+              onPress={() => setUseCustomDuration(!useCustomDuration)}
+              style={styles.toggleButton}
+            >
+              <AppText style={styles.toggleText}>
+                {useCustomDuration ? 'Use Presets' : 'Custom'}
+              </AppText>
+            </Pressable>
+          </View>
+
+          {!useCustomDuration ? (
+            <View style={styles.durationRow}>
             {/* Hours */}
             <View style={styles.durationBox}>
               <Pressable
@@ -192,6 +210,35 @@ const CreateTask = ({ onBack, onStart, onSave }: CreateTaskProps) => {
               </Pressable>
             </View>
           </View>
+          ) : (
+            <View style={styles.customDurationRow}>
+              <View style={styles.customDurationBox}>
+                <AppInput
+                  value={customHours}
+                  onChangeText={setCustomHours}
+                  placeholder="0"
+                  keyboardType="number-pad"
+                  style={styles.customInput}
+                  containerStyle={styles.customInputContainer}
+                  maxLength={2}
+                />
+                <AppText style={styles.customUnit}>hr</AppText>
+              </View>
+
+              <View style={styles.customDurationBox}>
+                <AppInput
+                  value={customMins}
+                  onChangeText={setCustomMins}
+                  placeholder="0"
+                  keyboardType="number-pad"
+                  style={styles.customInput}
+                  containerStyle={styles.customInputContainer}
+                  maxLength={2}
+                />
+                <AppText style={styles.customUnit}>min</AppText>
+              </View>
+            </View>
+          )}
         </View>
 
         <View style={styles.priorityGroup}>
@@ -255,25 +302,22 @@ const CreateTask = ({ onBack, onStart, onSave }: CreateTaskProps) => {
 
 export default CreateTask;
 
-// Navigation wrapper component
+// Navigation wrapper component — plugs the form into the shared TaskContext
 const CreateTaskScreenWrapper: React.FC = () => {
   const navigation = useNavigation();
-  const route = useRoute();
+  const { addTask, startTask } = useTasks();
 
   const handleBack = () => {
     navigation.goBack();
   };
 
   const handleStart = (task: Task) => {
-    const params = route.params as any;
-    if (params?.onTaskCreated) {
-      params.onTaskCreated(task);
-    }
+    startTask(task); // becomes the active/running task everywhere instantly
     navigation.goBack();
   };
 
   const handleSave = (task: Task) => {
-    navigation.goBack();
+    addTask(task); // added as "pending" everywhere instantly
   };
 
   return (
@@ -322,6 +366,27 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
+  durationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  toggleButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: 'rgba(79, 124, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(79, 124, 255, 0.3)',
+  },
+
+  toggleText: {
+    color: '#4f7cff',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -338,13 +403,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.06)',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-
-  backIcon: {
-    color: '#fff',
-    fontSize: 30,
-    fontWeight: '300',
-    lineHeight: 32,
   },
 
   scroll: {
@@ -458,6 +516,40 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.3)',
     fontSize: 11,
     marginLeft: 4,
+  },
+
+  customDurationRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+
+  customDurationBox: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  customInputContainer: {
+    marginBottom: 0,
+    flex: 1,
+  },
+
+  customInput: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    paddingVertical: 0,
+    backgroundColor: '#111118',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 16,
+    textAlign: 'center',
+    height: 52,
+  },
+
+  customUnit: {
+    color: 'rgba(255,255,255,0.3)',
+    fontSize: 12,
   },
 
   priorityGroup: {
