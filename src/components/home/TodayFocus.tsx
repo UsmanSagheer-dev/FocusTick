@@ -4,9 +4,11 @@ import { View, Text, StyleSheet } from 'react-native';
 interface TodayFocusProps {
   completed: number;
   goalPercent: number;
+  totalFocusTime: string; // formatted string like "3h 25m"
+  dailyGoal: string; // formatted string like "5h"
 }
 
-const TodayFocus = ({ completed, goalPercent }: TodayFocusProps) => {
+const TodayFocus = ({ completed, goalPercent, totalFocusTime, dailyGoal }: TodayFocusProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -15,7 +17,7 @@ const TodayFocus = ({ completed, goalPercent }: TodayFocusProps) => {
           <View>
             <Text style={styles.label}>TODAY'S FOCUS</Text>
 
-            <Text style={styles.focusTime}>3h 25m</Text>
+            <Text style={styles.focusTime}>{totalFocusTime}</Text>
 
             <Text style={styles.sessions}>{completed} sessions completed</Text>
           </View>
@@ -29,7 +31,7 @@ const TodayFocus = ({ completed, goalPercent }: TodayFocusProps) => {
         {/* Daily Goal */}
         <View>
           <View style={styles.goalHeader}>
-            <Text style={styles.goalText}>Daily Goal: 5h</Text>
+            <Text style={styles.goalText}>Daily Goal: {dailyGoal}</Text>
 
             <Text style={styles.percent}>{goalPercent}%</Text>
           </View>

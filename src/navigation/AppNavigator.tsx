@@ -7,21 +7,17 @@ import {
   AnalyticsScreen,
   SettingsScreen,
   CreateTaskScreen,
+  TaskDetailsScreen,
 } from '../screens';
+import FocusModeScreen from '../screens/FocusModeScreen';
 import BottomNavigation from '../common/BottomNavigation';
-
-interface Task {
-  id: string;
-  name: string;
-  project: string;
-  duration: string;
-  status: 'pending' | 'running' | 'completed' | 'paused' | 'expired';
-  durationMinutes: number;
-}
+import type { Task } from '../screens/TaskDetailsScreen';
 
 export type RootStackParamList = {
   Main: undefined;
   CreateTask: { onTaskCreated?: (task: Task) => void } | undefined;
+  TaskDetails: { task: Task };
+  FocusMode: { task: Task };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -39,6 +35,20 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen 
           name="CreateTask" 
           component={CreateTaskScreen}
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="TaskDetails"
+          component={TaskDetailsScreen}
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="FocusMode"
+          component={FocusModeScreen}
           options={{
             animation: 'slide_from_right',
           }}
